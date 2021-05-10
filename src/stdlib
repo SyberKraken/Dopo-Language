@@ -1,0 +1,162 @@
+#
+Returns the length of "it" for strings and lists
+#
+(it)@len{
+  (0,x)@
+  it ¤+ var{(1,x)+@}
+  x
+}
+
+#
+Returns the last element in a list or the last character of a string
+#
+(list)@last{
+  [((list)len,1)-]list
+}
+
+#
+Adds item into list or string in position 0 and pushes rest of list forward by 1 index
+#
+(item,list)@push*{
+  ((item,list)+,list)@
+  }
+
+#
+Removes element with index "index" from list or string
+#
+(index, list)@del_index* {
+  (0,i)@
+  list ¤+ item{
+    (i,index)=?{
+      (item,list)-@
+    }
+    (1,i)+@
+  }
+  list
+}
+
+#
+Returns the index of item in list or string if it exists
+#
+(item,list)@get_index{
+(0,index)@
+list ¤+ element{
+  (item,element)=?{
+    index<-
+  }
+  (1,index)+@
+  }
+  index
+}
+
+#
+Deletes first occurence of item from list or string, if multiple is true then remove all matching elements
+#
+(item, list, multiple)@del_item*
+{
+  ([],ret_list)@
+  (0, removed_element)@
+
+  (multiple, T)=?
+  {
+    (item,list)contains¤
+    {
+      (item,list)-@
+    }
+  }
+  e>
+  {
+   ((item,list)get_index,list)del_index
+  }
+  list
+}
+
+#
+Returns a list containing elments with the letters of str split up by delim symbols
+#
+(str, delim)@split {
+  ([],ret_list)@
+  ("", str_element)@
+
+  str ¤+ char {
+    (char, delim)=? {
+      (str_element, ret_list)+@
+      ("", str_element)@
+    }
+    e> {
+      (char, str_element)+@
+    }
+  }
+  (str_element, ret_list)+@
+  ret_list
+}
+
+#
+Returns true if item is in list or string otherwise returns false
+#
+(item, list)@contains{
+  (F, bool_ret)@
+  list ¤+ element {
+    (bool_ret, T)=? {
+      bool_ret <-
+    }
+    (item, element)=? {
+      (T, bool_ret)+@
+    }
+  }
+  bool_ret
+}
+
+#
+Returns first element in list or string
+#
+(list)@first{
+  [0]list
+}
+#
+
+Removes item with index "index" from list or string and returns that item
+#
+(index, list)@pop*{
+  ([index]list,element)@
+  (index, list)del_index
+  element
+}
+
+#
+Adds value to list or string at index ((list)len,1)+
+#
+(value,list)@append*{
+  (value, list)+@
+}
+
+#
+Adds item at place index in list or string
+#
+(item,index,list)@insert*
+{
+  ([],ret_list)@
+  (0,i)@
+  list ¤+ elem
+  {
+    (i, index)!=?
+    {
+      (elem, ret_list)append
+    }
+    e>
+    {
+      (index,((list)len,1)-)!=?
+      {
+        (item, ret_list)append
+        (elem, ret_list)append
+      }
+      e>
+      {
+        (elem, ret_list)append
+        (item, ret_list)append
+      }
+    }
+    (1,i)+@
+  }
+  (ret_list,list)@
+}

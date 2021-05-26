@@ -201,6 +201,7 @@ class Dopo
       end
 
       rule :variable_assignment do
+        match('(', :call, ',' , :index, ')', '@') {|_, c,_, i, _, _|  Assignment.new(c,i) }
         #Math works in right to left, assignment operator dominant
         match('(', :call, ',' , :name, ')', :math_op,'@') {|_,c,_,n,_,m,_| Assignment.new(Operator_expr.new(m, Param_list.new(n,c)), n)}
         match('(', :call, ',' , :name, ')','@') {|_,c,_,n,_,_| Assignment.new(c,n) }
@@ -209,7 +210,7 @@ class Dopo
 
       rule :call do
         match(:user_input) {|u| u}
-        match(:print) {|p| p}
+        match(:print) {|pr| pr}
         match('(', :param_list, ')', :name) {|_,pa,_,n| Call.new(n, pa)}
         match('(', :param_list, ')', :op) {|_,pa,_,o| Operator_expr.new(o, pa)}
         match('(', ')', :name) {|_,_,n| Call.new(n)}
@@ -250,7 +251,7 @@ class Dopo
       end
 
       rule :math_op do
-        match(/\+|-|\*|\/|%|^/) {|o| o}
+        match(/\+|-|\*|\/|%|\^/) {|o| o}
       end
 
       rule :index do
@@ -360,10 +361,9 @@ class Dopo
     else
       if ARGV.length >= 1
         #File read mode
-        #TODO if time make classes for list functions instead of stdlib
-        lines = File.read("stdlib")
+        lines = File.read("stdlib", :encoding => 'utf-8')
         @dopo_parser.parse lines
-        lines = File.read(ARGV[0])
+        lines = File.read(ARGV[0], :encoding => 'utf-8')
         @dopo_parser.parse "([],CIN)@"
         ARGV[1..-1].each do |arg|
           @dopo_parser.parse("((\"#{arg}\",CIN)+,CIN)@")

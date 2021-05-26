@@ -113,8 +113,8 @@ Returns first element in list or string
 (list)@first{
   [0]list
 }
-#
 
+#
 Removes item with index "index" from list or string and returns that item
 #
 (index, list)@pop*{

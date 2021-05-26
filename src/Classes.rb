@@ -276,7 +276,7 @@ class Assignment < Valid
   #Open set to true is for functions that take references as parameters
   #Valids are for functions and is the statements to run in a function block
   def initialize(value, name, valids = nil, open = false)
-    @name = name.get_name
+    @name = name
     @value = value
     @valids = valids
     @open = open
@@ -284,12 +284,22 @@ class Assignment < Valid
 
   def execute
     #Appends a variable or function to @@scopes
-    name_exec = @name
+    name_exec = @name.get_name
     val_exec = @value.execute
 
     #Variable
     if @valids == nil
-      ret = Dopo.scope_append(name_exec, val_exec)
+      #Used for setting new values in a List, String_c or Dictionary by index
+      if @name.is_a? Iterate and @name.execute
+        iterate_name = @name
+        iterate = @name.call.execute
+        index = @name.lookup.execute
+        iterate[index] = val_exec
+
+        ret = Dopo.scope_append(iterate_name, val_exec)
+      else
+        ret = Dopo.scope_append(name_exec, val_exec)
+      end
     else
       #Function
       @reserved_names = ["p", "g"]
@@ -1005,9 +1015,14 @@ end
 
 class Iterate < Valid
   #To be able to get value from index of classes string_c, Dictionary and List
+  attr_reader :lookup, :call
   def initialize(call, lookup)
     @call = call
     @lookup = lookup
+  end
+
+  def get_name
+    @call
   end
 
   def execute

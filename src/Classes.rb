@@ -207,7 +207,7 @@ class Valid_list
       return @@command
     end
 
-    #run the first valid 
+    #run the first valid
     control_check = @valid.execute
 
     if check_running_abort_or_continue(control_check)
@@ -640,28 +640,18 @@ class Operator_expr < Call
     @executed_list = @param_list.execute
     check_class = @executed_list[0].class
 
-    if @executed_list.any? { |parameter| parameter.nil?}
-      return execute_nil_comp
-    elsif check_class == Hash
+    if check_class == Hash
       return execute_dict_func
     elsif @executed_list.any? { |parameter| parameter.is_a? Array }
       return execute_list_func
-    elsif [TrueClass, FalseClass].include? check_class
-      valid = @executed_list.all? { |parameter| parameter.is_a? TrueClass or parameter.is_a? FalseClass }
-    elsif [Integer, Float].include? check_class
-      valid = @executed_list.all? { |parameter| parameter.is_a? Integer or parameter.is_a? Float }
-    elsif @executed_list.any? {|parameter| parameter.is_a? String}
-      valid = @executed_list.all? { |parameter| parameter.is_a? String}
-    end
-
-    if valid
-      if check_class == TrueClass or check_class == FalseClass
+    elsif @executed_list.any? { |parameter| parameter.nil?}
+      return execute_nil_comp
+    elsif @executed_list.all? { |parameter| parameter.is_a? TrueClass or parameter.is_a? FalseClass }
         execute_bool_logic
-      elsif check_class == String
-        execute_string_functionality
-      elsif check_class == Integer or check_class == Float
+    elsif @executed_list.all? { |parameter| parameter.is_a? Integer or parameter.is_a? Float }
         execute_arithmetic
-      end
+    elsif  @executed_list.all? { |parameter| parameter.is_a? String}
+        execute_string_functionality
     else
       raise Exception.new "unexpected \"#{@executed_list}\" in call to \"#{@op}\" "
     end
@@ -1060,7 +1050,7 @@ class Variable < Call
 
   def execute
   #Finds value for variable call
-  
+
     found_var = false
 
     ret = Default.new

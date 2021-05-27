@@ -644,13 +644,13 @@ class Operator_expr < Call
       return execute_dict_func
     elsif @executed_list.any? { |parameter| parameter.is_a? Array }
       return execute_list_func
-    elsif @executed_list.any? { |parameter| parameter.nil?}
+    elsif @executed_list.any? { |parameter| parameter.nil? }
       return execute_nil_comp
     elsif @executed_list.all? { |parameter| parameter.is_a? TrueClass or parameter.is_a? FalseClass }
         execute_bool_logic
     elsif @executed_list.all? { |parameter| parameter.is_a? Integer or parameter.is_a? Float }
         execute_arithmetic
-    elsif  @executed_list.all? { |parameter| parameter.is_a? String}
+    elsif  @executed_list.all? { |parameter| parameter.is_a? String }
         execute_string_functionality
     else
       raise Exception.new "unexpected \"#{@executed_list}\" in call to \"#{@op}\" "
@@ -786,8 +786,7 @@ class Operator_expr < Call
   end
 
   def execute_string_functionality
-    #Execute for string_c class when using -, =, !=, +, ! operator
-
+    #Execute for string_c class when using -, =, !=, +, !, <, >, >=, <= operator
     vars = @executed_list
     req_two_args = ["=", "!=", ">", "<", "<=", ">="]
     if vars.length != 2 and req_two_args.include? @op
@@ -801,10 +800,10 @@ class Operator_expr < Call
       vars = vars.reverse
       vars.each { |str| res_str.sub!(str, "") }
       res_str
-    elsif @op == "!" #???
+    elsif @op == "!"
       return false
     elsif @op == "=" or @op == "!="
-      #compare two strings
+      #Compare two strings equal or not
       if @op == "="
         return vars[0] == vars[1]
       else
@@ -815,6 +814,7 @@ class Operator_expr < Call
         res_str += str
       end
       res_str
+    #Compare based of letters
     elsif @op == ">"
       return vars[0] > vars[1]
     elsif @op == "<"
@@ -832,29 +832,31 @@ class Operator_expr < Call
 
   def execute_arithmetic
     #Translates a math expr match to a ruby evaluate-able string and evaluates it
+
+    if @op == "->"
+      raise Exception.new "OPERROR \"#{@op}\" is not allowed operator for Integers"
+    end
+
     vars = @executed_list
     res = ""
-    valid_op = ["/", "+", "-", "*", "%", "^", "\\", "&", "|", "!", "=", "<",
-      ">", ">=", "->", "<=", "!=" ]
-      if @op == "="
-        temp_op = "=="
-      elsif @op == "^"
-        temp_op = "**"
-      elsif @op == "!" and @executed_list.length == 1
-        return (not @executed_list[0])
-      elsif valid_op.include? @op
-        temp_op = @op
-      else
-        raise Exception.new "OPERROR  invalid operator \"#{@op}\""
-      end
 
-      vars.each do |val|
-        res += val.to_s + temp_op
-      end
+    if @op == "="
+      temp_op = "=="
+    elsif @op == "^"
+      temp_op = "**"
+    elsif @op == "!" and @executed_list.length == 1
+      return (not @executed_list[0])
+    else
+      temp_op = @op
+    end
 
-      res.gsub!(/\W+$/, "")
-      res_num = eval(res)
-      res_num
+    vars.each do |val|
+      res += val.to_s + temp_op
+    end
+
+    res.gsub!(/\W+$/, "")
+    res_num = eval(res)
+    res_num
   end
 end
 

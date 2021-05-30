@@ -17,7 +17,7 @@ class Dopo
   def self.clean_scopes
     @@scopes = [Scope.new]
   end
-  ##############################################################################################
+  ###########################################################################################
 
   def self.scopes
     @@scopes
@@ -173,6 +173,7 @@ class Dopo
       rule :else do
         match('e>', :block) {|_,b| Else_statement.new(b)}
       end
+
       rule :assignment do
         match(:function_assignment) {|f| f}
         match(:variable_assignment) {|v| v}
@@ -201,16 +202,17 @@ class Dopo
       end
 
       rule :variable_assignment do
-        match('(', :call, ',' , :index, ')', '@') {|_, c,_, i, _, _|  Assignment.new(c,i) }
-        #Math works in right to left, assignment operator dominant
+        match('(', :call, ',' , :index, ')', '@') {|_, c,_, i, _, _| Assignment.new(c,i)}
+        #Math works in right to left, assignment operator more dominant
         match('(', :call, ',' , :name, ')', :math_op,'@') {|_,c,_,n,_,m,_| Assignment.new(Operator_expr.new(m, Param_list.new(n,c)), n)}
-        match('(', :call, ',' , :name, ')','@') {|_,c,_,n,_,_| Assignment.new(c,n) }
-        match('(', :name, ')', '@') {|_,n,_,_| Assignment.new(Nil_c.new,n) }
+        match('(', :call, ',' , :name, ')','@') {|_,c,_,n,_,_| Assignment.new(c,n)}
+        match('(', :name, ')', '@') {|_,n,_,_| Assignment.new(Nil_c.new,n)}
       end
 
       rule :call do
         match(:user_input) {|u| u}
         match(:print) {|pr| pr}
+        #Function call
         match('(', :param_list, ')', :name) {|_,pa,_,n| Call.new(n, pa)}
         match('(', :param_list, ')', :op) {|_,pa,_,o| Operator_expr.new(o, pa)}
         match('(', ')', :name) {|_,_,n| Call.new(n)}
@@ -233,7 +235,7 @@ class Dopo
       end
 
       rule :user_input do
-        match('(', :call ,')','g') {|_,c,_,_| User_input.new(self, c) }
+        match('(', :call ,')','g') {|_,c,_,_| User_input.new(self, c)}
         match('(',')','g') {User_input.new(self)}
       end
 
@@ -259,8 +261,8 @@ class Dopo
       end
 
       rule :var do
-        match(:nil) {|n| n }
-        match(:dictionary) {|d| d }
+        match(:nil) {|n| n}
+        match(:dictionary) {|d| d}
         match(:list) {|l| l}
         match(:string) {|s| s}
         match(:bool) {|b| Bool_c.new(b)}
@@ -288,7 +290,7 @@ class Dopo
 
       rule :list do
         match('[', :param_list, ']') {|_,p,_| List.new(p)}
-        match('[', ']') {|_,_| List.new}
+        match('[', ']') {List.new}
       end
 
       rule :string do
@@ -338,7 +340,7 @@ class Dopo
       end
 
       rule :digit_list do
-        match(:digits, /\n/) {|d,_| d }
+        match(:digits, /\n/) {|d,_| d}
         match(:digits) {|d| d}
       end
 
@@ -353,7 +355,8 @@ class Dopo
   end
 
   def start(runstring = false)
-    #runs the language on given string,file or in interactive mode if no string or file is given.
+    #runs the language on given string, file or in interactive mode if no string or file is given.
+    
     log(false) # set to true to track lexer and parsing process from rdparse
 
     if runstring

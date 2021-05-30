@@ -1,5 +1,5 @@
 #
-Returns the length of "it" for strings and lists
+Returns the length of a string or list
 #
 (it)@len{
   (0,x)@
@@ -133,9 +133,13 @@ Adds value to list or string at index ((list)len,1)+
 #
 Adds item at place index in list or string
 #
-(item,index,list)@insert*
+(item,index,list,is_string)@insert*
 {
   ([],ret_list)@
+  is_string?
+  {
+    ("",ret_list)@
+  }
   (0,i)@
   list ¤+ elem
   {

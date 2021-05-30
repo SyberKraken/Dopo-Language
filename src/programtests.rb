@@ -320,7 +320,6 @@ class Tester < Test::Unit::TestCase
     str = "(\"HELLO\", \"HELL\")!="
     assert_equal(true, p.start(str))
 
-    #not equal
     str = "(\"HELLO\", \"HELLO\")!="
     assert_equal(false, p.start(str))
   end
@@ -360,7 +359,6 @@ class Tester < Test::Unit::TestCase
     p.start("(\"123\",c)@")
     p.start("(x)@xr{x}")
     assert_equal("2",p.start("([1]c)xr"))
-
   end
 
   def test_for_each
@@ -405,7 +403,6 @@ class Tester < Test::Unit::TestCase
     "
     assert_equal(8,p.start(str))
     Dopo.clean_scopes
-
   end
 
   def test_stdlib
@@ -448,7 +445,9 @@ class Tester < Test::Unit::TestCase
     #append
     assert_equal([56,7,34], p.start("(34, [56,7])append"))
     assert_equal("sanhej", p.start("(\"hej\",\"san\")append"))
-
+    #insert
+    assert_equal([34,56,7], p.start("(34,0,[56,7], F)insert"))
+    assert_equal("Helclo", p.start("(\"c\",3,\"Hello\", T)insert"))
   end
 
   def test_ref_functions

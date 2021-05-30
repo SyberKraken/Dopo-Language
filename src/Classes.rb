@@ -1,4 +1,3 @@
-
 class Array
   #Makes arrays "runnable" as to make them flow through functions that work on valids
   def execute
@@ -290,7 +289,7 @@ class Assignment < Valid
     #Variable
     if @valids == nil
       #Used for setting new values in a List, String_c or Dictionary by index
-      if @name.is_a? Iterate and @name.execute
+      if @name.is_a? Iterate and @name.execute # check index in range
         iterate_name = @name
         iterate = @name.call.execute
         index = @name.lookup.execute

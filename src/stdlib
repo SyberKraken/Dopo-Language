@@ -131,7 +131,8 @@ Adds value to list or string at index ((list)len,1)+
 }
 
 #
-Adds item at place index in list or string
+Adds item at place index in list or string,
+if is_string is set to true then list paramteter is a string otherwise a list
 #
 (item,index,list,is_string)@insert*
 {
